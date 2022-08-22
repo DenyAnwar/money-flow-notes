@@ -1,6 +1,6 @@
 # money-flow-notes
 
-This is my project that i have crafted using android studio,
+This project that i have crafted using android studio,
 a mobile apps for taking notes revenue and expenditure money.
 
 ## 🚀 Quick start
