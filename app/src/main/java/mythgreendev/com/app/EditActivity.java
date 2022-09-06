@@ -58,10 +58,10 @@ public class EditActivity extends AppCompatActivity {
 
         status = cursor.getString(1);
         switch (status) {
-            case "REVENUE":
+            case "Income":
                 radioRevenue.setChecked(true);
                 break;
-            case "EXPENDITURE":
+            case "Outcome":
                 radioExpenditure.setChecked(true);
                 break;
         }
@@ -71,10 +71,10 @@ public class EditActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.radio_revenue:
-                        status = "REVENUE";
+                        status = "Income";
                         break;
                     case R.id.radio_expenditure:
-                        status = "EXPENDITURE";
+                        status = "Outcome";
                         break;
                 }
             }

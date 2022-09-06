@@ -22,20 +22,20 @@
                 android:focusable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="From" />
+                android:hint="@string/from" />
             <EditText
                 android:id="@+id/edit_to"
                 android:focusable="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="To" />
+                android:hint="@string/to" />
 
             <Button
                 android:id="@+id/btn_save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_bg"
-                android:text="SAVE"
+                android:text="@string/save"
                 android:textColor="@color/white"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>

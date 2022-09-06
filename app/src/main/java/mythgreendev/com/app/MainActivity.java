@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
@@ -18,9 +19,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import android.widget.AdapterView;
@@ -73,10 +76,10 @@ public class MainActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                queryKas    = "SELECT *, strftime('%d/%m/%Y', tanggal) AS tanggal FROM transaksi ORDER BY transaksi_id DESC";
+                queryKas    = "SELECT *, strftime('%d/%m/%Y', tanggal) AS tanggal FROM transaksi ORDER BY tanggal DESC, transaksi_id DESC";
                 queryAmount = "SELECT SUM(jumlah) AS total, " +
-                              "(SELECT SUM(jumlah) FROM transaksi WHERE status='REVENUE') AS revenue, " +
-                              "(SELECT sum(jumlah) FROM transaksi WHERE status='EXPENDITURE') AS expenditure " +
+                              "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income') AS income, " +
+                              "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome') AS outcome " +
                               "FROM transaksi";
 
                 kasAdapter();
@@ -94,23 +97,26 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // Set title
+        getSupportActionBar().setTitle("Money Flow Notes");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi ORDER BY tanggal DESC";
+        queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi ORDER BY tanggal DESC, transaksi_id DESC";
         queryAmount = "SELECT SUM(jumlah) AS total, " +
-                      "(SELECT SUM(jumlah) FROM transaksi WHERE status='REVENUE') AS revenue, " +
-                      "(SELECT sum(jumlah) FROM transaksi WHERE status='EXPENDITURE') AS expenditure " +
+                      "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income') AS income, " +
+                      "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome') AS outcome " +
                       "FROM transaksi";
 
         if (filter) {
             queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi " +
-                          "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') ORDER BY tanggal ASC";
+                          "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') ORDER BY tanggal DESC, transaksi_id DESC";
             queryAmount = "SELECT SUM(jumlah) AS total, " +
-                          "(SELECT SUM(jumlah) FROM transaksi WHERE status='REVENUE' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')), " +
-                          "(SELECT sum(jumlah) FROM transaksi WHERE status='EXPENDITURE'AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
+                          "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')), " +
+                          "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome'AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
                           "FROM transaksi WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')";
         }
 
@@ -144,7 +150,21 @@ public class MainActivity extends AppCompatActivity {
         SimpleAdapter simpleAdapter = new SimpleAdapter(this, kasFlow, R.layout.list_kas,
                 new String[]{"transaksi_id", "status", "jumlah", "keterangan", "tanggal"},
                 new int[]{R.id.text_transaction_id, R.id.text_status,
-                          R.id.text_amount, R.id.text_description, R.id.text_date});
+                          R.id.text_amount, R.id.text_description, R.id.text_date}) {
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textStatus = (TextView) view.findViewById(R.id.text_status);
+                if (textStatus.getText().toString().equals("Income")) {
+                    textStatus.setTextColor(Color.rgb(51, 51, 255)); // #3333ff
+                } else if (textStatus.getText().toString().equals("Outcome")) {
+                    textStatus.setTextColor(Color.rgb(240, 0, 0)); // #f00000
+                } else {
+                    textStatus.setTextColor(Color.BLACK);
+                    Log.d("test", textStatus.getText().toString());
+                }
+                return view;
+            }
+        };
 
         listKas.setAdapter(simpleAdapter);
         listKas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -169,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         textBalance.setText(rupiahFormat.format(cursor.getDouble(1) - cursor.getDouble(2)));
 
         if (!filter) {
-            textFilter.setText("ALL");
+            textFilter.setText("ALL SHOW");
         }
         filter = false;
     }

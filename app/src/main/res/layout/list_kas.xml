@@ -15,7 +15,7 @@
         android:id="@+id/text_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="100.000"
+        android:text="@string/money_list_kas"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -27,14 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/text_status"
-            android:text="Beli nasi padang" />
+            android:text="@string/desc_list_kas" />
         <TextView
             android:id="@+id/text_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="REVENUE"
-            android:textSize="12sp"
+            android:text="@string/type_data_list_kas"
+            android:textSize="13sp"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -42,7 +42,7 @@
         android:id="@+id/text_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="28 August 2022"
+        android:text="@string/date_list_kas"
         android:textSize="11sp"
         />
 </LinearLayout>

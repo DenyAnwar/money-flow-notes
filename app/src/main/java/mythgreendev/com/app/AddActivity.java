@@ -37,10 +37,10 @@ public class AddActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.radio_revenue:
-                        status = "REVENUE";
+                        status = "Income";
                         break;
                     case R.id.radio_expenditure:
-                        status = "EXPENDITURE";
+                        status = "Outcome";
                         break;
                 }
             }
@@ -71,7 +71,7 @@ public class AddActivity extends AppCompatActivity {
         });
 
         // Set title
-        getSupportActionBar().setTitle("Add New");
+        getSupportActionBar().setTitle("Add");
         // Back icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
