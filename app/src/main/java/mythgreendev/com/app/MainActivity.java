@@ -44,13 +44,13 @@ public class MainActivity extends AppCompatActivity {
     ListView listKas;
     SwipeRefreshLayout swipeRefresh;
 
-    String queryKas, queryAmount;
+    String queryKas, queryAmount, queryAmountIncome, queryAmountOutcome;
     SqliteHelper sqliteHelper;
     Cursor cursor;
 
     public static TextView textFilter;
-    public static String transactionId, dateFrom, dateTo;
-    public static boolean filter;
+    public static String transactionId, dateFrom, dateTo, checkedIncome, checkedOutcome;
+    public static boolean filter, filterIncome, filterOutcome;
 
     ArrayList<HashMap<String, String>> kasFlow = new ArrayList<>();
 
@@ -64,7 +64,11 @@ public class MainActivity extends AppCompatActivity {
         transactionId = "";
         dateFrom      = "";
         dateTo        = "";
-        filter        = false;
+        checkedIncome = "";
+        checkedOutcome = "";
+        filter = false;
+        filterIncome = false;
+        filterOutcome = false;
 
         textRevenue     = (TextView) findViewById(R.id.text_revenue);
         textExpenditure = (TextView) findViewById(R.id.text_expenditure);
@@ -111,13 +115,38 @@ public class MainActivity extends AppCompatActivity {
                       "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome') AS outcome " +
                       "FROM transaksi";
 
+//        if (filter) {
+//            queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi " +
+//                          "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') ORDER BY tanggal DESC, transaksi_id DESC";
+//            queryAmount = "SELECT SUM(jumlah) AS total, " +
+//                          "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')), " +
+//                          "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome'AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
+//                          "FROM transaksi WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')";
+//        }
+
+        if (filterIncome) {
+            queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi " +
+                    "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') AND (status = '" + checkedIncome + "') ORDER BY tanggal DESC, transaksi_id DESC";
+            queryAmountIncome = "SELECT SUM(jumlah) AS total, " +
+                    "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
+                    "FROM transaksi WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')";
+        }
+
+        if (filterOutcome) {
+            queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi " +
+                    "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') AND (status = '" + checkedOutcome + "') ORDER BY tanggal DESC, transaksi_id DESC";
+            queryAmountOutcome = "SELECT SUM(jumlah) AS total, " +
+                    "(SELECT SUM(jumlah) FROM transaksi WHERE status='Outcome' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
+                    "FROM transaksi WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')";
+        }
+
         if (filter) {
             queryKas    = "SELECT *, strftime('%d-%m-%Y', tanggal) AS tanggal FROM transaksi " +
-                          "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') ORDER BY tanggal DESC, transaksi_id DESC";
+                    "WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "') ORDER BY tanggal DESC, transaksi_id DESC";
             queryAmount = "SELECT SUM(jumlah) AS total, " +
-                          "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')), " +
-                          "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome'AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
-                          "FROM transaksi WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')";
+                    "(SELECT SUM(jumlah) FROM transaksi WHERE status='Income' AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')), " +
+                    "(SELECT sum(jumlah) FROM transaksi WHERE status='Outcome'AND (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')) " +
+                    "FROM transaksi WHERE (tanggal >= '" + dateFrom + "') AND (tanggal <= '" + dateTo + "')";
         }
 
         kasAdapter();
@@ -182,16 +211,48 @@ public class MainActivity extends AppCompatActivity {
         NumberFormat rupiahFormat = NumberFormat.getInstance(Locale.GERMANY);
 
         SQLiteDatabase database = sqliteHelper.getReadableDatabase();
-        cursor = database.rawQuery(queryAmount, null);
-        cursor.moveToFirst();
-        textRevenue.setText(rupiahFormat.format(cursor.getDouble(1)));
-        textExpenditure.setText(rupiahFormat.format(cursor.getDouble(2)));
-        textBalance.setText(rupiahFormat.format(cursor.getDouble(1) - cursor.getDouble(2)));
+//        cursor = database.rawQuery(queryAmount, null);
+//        cursor.moveToFirst();
+//        textRevenue.setText(rupiahFormat.format(cursor.getDouble(1)));
+//        textExpenditure.setText(rupiahFormat.format(cursor.getDouble(2)));
+//        textBalance.setText(rupiahFormat.format(cursor.getDouble(1) - cursor.getDouble(2)));
 
-        if (!filter) {
+        if (filterIncome) {
+            cursor = database.rawQuery(queryAmountIncome, null);
+            cursor.moveToFirst();
+            textRevenue.setText(rupiahFormat.format(cursor.getDouble(1)));
+            textExpenditure.setText(rupiahFormat.format(0));
+            textBalance.setText(rupiahFormat.format(cursor.getDouble(1) - 0));
+        } else if (filterOutcome) {
+            cursor = database.rawQuery(queryAmountOutcome, null);
+            cursor.moveToFirst();
+            textRevenue.setText(rupiahFormat.format(0));
+            textExpenditure.setText(rupiahFormat.format(cursor.getDouble(1)));
+            textBalance.setText(rupiahFormat.format(0 - cursor.getDouble(1)));
+        } else if (filter) {
+            cursor = database.rawQuery(queryAmount, null);
+            cursor.moveToFirst();
+            textRevenue.setText(rupiahFormat.format(cursor.getDouble(1)));
+            textExpenditure.setText(rupiahFormat.format(cursor.getDouble(2)));
+            textBalance.setText(rupiahFormat.format(cursor.getDouble(1) - cursor.getDouble(2)));
+        } else {
+            cursor = database.rawQuery(queryAmount, null);
+            cursor.moveToFirst();
+            textRevenue.setText(rupiahFormat.format(cursor.getDouble(1)));
+            textExpenditure.setText(rupiahFormat.format(cursor.getDouble(2)));
+            textBalance.setText(rupiahFormat.format(cursor.getDouble(1) - cursor.getDouble(2)));
+        }
+
+        if (!filter || !filterIncome || !filterOutcome) {
             textFilter.setText("ALL SHOW");
         }
         filter = false;
+        filterIncome = false;
+        filterOutcome = false;
+
+        // Clear data or reset
+        dateFrom = "";
+        dateTo = "";
     }
 
     private void listMenu() {

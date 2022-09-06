@@ -1,10 +1,12 @@
 package mythgreendev.com.app;
 
 import android.app.DatePickerDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ public class FilterActivity extends AppCompatActivity {
     MainActivity M = new MainActivity();
 
     EditText editFrom, editTo;
+    CheckBox checkIncome, checkOutcome;
     Button btnSave;
 
     DatePickerDialog datePickerDialog;
@@ -30,6 +33,8 @@ public class FilterActivity extends AppCompatActivity {
 
         editFrom = (EditText) findViewById(R.id.edit_from);
         editTo   = (EditText) findViewById(R.id.edit_to);
+        checkIncome = (CheckBox) findViewById(R.id.checkbox_income);
+        checkOutcome = (CheckBox) findViewById(R.id.checkbox_outcome);
         btnSave = (Button) findViewById(R.id.btn_save);
 
         Calendar calendar = Calendar.getInstance();
@@ -70,13 +75,49 @@ public class FilterActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (M.dateFrom.equals("") || M.dateTo.equals("")) {
-                    Toast.makeText(FilterActivity.this, "Please fill the data correctly",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    M.filter = true;
-                    M.textFilter.setText(editFrom.getText().toString() + " - " + editTo.getText().toString());
-                    finish();
+//                if (M.dateFrom.equals("") || M.dateTo.equals("")) {
+//                    Toast.makeText(FilterActivity.this, "Please fill the data correctly",
+//                            Toast.LENGTH_LONG).show();
+//                } else {
+//                    M.filter = true;
+//                    M.textFilter.setText(editFrom.getText().toString() + " - " + editTo.getText().toString());
+//                    finish();
+//                }
+
+                if (checkIncome.isChecked() && !checkOutcome.isChecked()) {
+                    if (M.dateFrom.equals("") || M.dateTo.equals("")) {
+                        Toast.makeText(FilterActivity.this, "Please fill the data correctly",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        M.filterIncome = true;
+                        M.checkedIncome = "Income";
+                        M.textFilter.setText(editFrom.getText().toString() + " - " + editTo.getText().toString());
+                        finish();
+                        Log.d("test", M.checkedIncome);
+                    }
+                } else
+
+                if (!checkIncome.isChecked() && checkOutcome.isChecked()) {
+                    if (M.dateFrom.equals("") || M.dateTo.equals("")) {
+                        Toast.makeText(FilterActivity.this, "Please fill the data correctly",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        M.filterOutcome = true;
+                        M.checkedOutcome = "Outcome";
+                        M.textFilter.setText(editFrom.getText().toString() + " - " + editTo.getText().toString());
+                        finish();
+                    }
+                }
+
+                if (checkIncome.isChecked() && checkOutcome.isChecked()){
+                    if (M.dateFrom.equals("") || M.dateTo.equals("")) {
+                        Toast.makeText(FilterActivity.this, "Please fill the data correctly",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        M.filter = true;
+                        M.textFilter.setText(editFrom.getText().toString() + " - " + editTo.getText().toString());
+                        finish();
+                    }
                 }
             }
         });
