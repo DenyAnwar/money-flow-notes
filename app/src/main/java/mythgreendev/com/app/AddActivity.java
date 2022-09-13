@@ -1,13 +1,15 @@
 package mythgreendev.com.app;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import java.math.BigDecimal;
 
 import mythgreendev.com.app.helper.SqliteHelper;
 
@@ -28,7 +30,10 @@ public class AddActivity extends AppCompatActivity {
         sqliteHelper = new SqliteHelper(this);
 
         radioStatus      = (RadioGroup) findViewById(R.id.radio_status);
+
         editAmountMoney = (EditText) findViewById(R.id.edit_amount_money);
+        editAmountMoney.addTextChangedListener(new MoneyTextWatcher(editAmountMoney));
+
         editDescription  = (EditText) findViewById(R.id.edit_description);
         btnSave          = (Button) findViewById(R.id.btn_save);
 
@@ -49,7 +54,7 @@ public class AddActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String amount      = editAmountMoney.getText().toString();
+                BigDecimal amount = MoneyTextWatcher.parseCurrencyValue(editAmountMoney.getText().toString());
                 String description = editDescription.getText().toString();
 
                 if (status.equals("") || amount.equals("") || description.equals("")) {

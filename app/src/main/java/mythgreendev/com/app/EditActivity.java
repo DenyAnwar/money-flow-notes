@@ -3,8 +3,8 @@ package mythgreendev.com.app;
 import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
@@ -46,7 +47,10 @@ public class EditActivity extends AppCompatActivity {
         radioStatus      = (RadioGroup) findViewById(R.id.radio_status);
         radioRevenue      = (RadioButton) findViewById(R.id.radio_revenue);
         radioExpenditure  = (RadioButton) findViewById(R.id.radio_expenditure);
+
         editAmountMoney = (EditText) findViewById(R.id.edit_amount_money);
+        editAmountMoney.addTextChangedListener(new MoneyTextWatcher(editAmountMoney));
+
         editDescription  = (EditText) findViewById(R.id.edit_description);
         editDate          = (EditText) findViewById(R.id.edit_date);
         btnSave          = (Button) findViewById(R.id.btn_save);
@@ -108,7 +112,7 @@ public class EditActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String amount      = editAmountMoney.getText().toString();
+                BigDecimal amount = MoneyTextWatcher.parseCurrencyValue(editAmountMoney.getText().toString());
                 String description = editDescription.getText().toString();
 
                 if (status.equals("") || amount.equals("") || description.equals("")) {

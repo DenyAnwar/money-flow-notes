@@ -18,4 +18,6 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="type_data_list_kas">Income</string>
+    <string name="one_item_selected"> One Item Selected</string>
+    <string name="items_selected">  Items Selected</string>
 </resources>
